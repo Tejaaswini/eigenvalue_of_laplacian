@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Eigenvalue Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Eigenvalue Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Simple 2x2 Matrix</h2>
+        <button onclick="test2x2()">Test 2x2 Matrix</button>
+        <div id="result1" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Simple Graph</h2>
+        <button onclick="testSimpleGraph()">Test Simple Graph</button>
+        <div id="result2" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Identity Matrix</h2>
+        <button onclick="testIdentity()">Test Identity Matrix</button>
+        <div id="result3" class="result"></div>
+    </div>
+    
+    <script src="eigenvalue.js"></script>
+    <script>
+        function test2x2() {
+            const matrix = [[2, 1], [1, 2]];
+            console.log('Testing 2x2 matrix:', matrix);
+            
+            const eigenvalues = eigenvalueCalculator.calculateEigenvalues(matrix);
+            console.log('Eigenvalues:', eigenvalues);
+            
+            document.getElementById('result1').innerHTML = `
+                <strong>Matrix:</strong><br>
+                [${matrix[0].join(', ')}]<br>
+                [${matrix[1].join(', ')}]<br><br>
+                <strong>Eigenvalues:</strong> [${eigenvalues.map(x => x.toFixed(3)).join(', ')}]<br>
+                <strong>Expected:</strong> [3, 1] (approximately)
+            `;
+        }
+        
+        function testSimpleGraph() {
+            // Create a simple graph: 1-2-3
+            const graph = {
+                nodes: [
+                    {id: 1, x: 100, y: 100},
+                    {id: 2, x: 200, y: 100},
+                    {id: 3, x: 300, y: 100}
+                ],
+                edges: [
+                    {from: 1, to: 2},
+                    {from: 2, to: 3}
+                ],
+                getAdjacencyMatrix() {
+                    const n = this.nodes.length;
+                    const matrix = Array(n).fill().map(() => Array(n).fill(0));
+                    
+                    for (const edge of this.edges) {
+                        const fromIndex = this.nodes.findIndex(n => n.id === edge.from) - 1;
+                        const toIndex = this.nodes.findIndex(n => n.id === edge.to) - 1;
+                        
+                        if (fromIndex >= 0 && toIndex >= 0) {
+                            matrix[fromIndex][toIndex] = 1;
+                            matrix[toIndex][fromIndex] = 1;
+                        }
+                    }
+                    
+                    return matrix;
+                },
+                getDegreeMatrix() {
+                    const n = this.nodes.length;
+                    const matrix = Array(n).fill().map(() => Array(n).fill(0));
+                    const adjacency = this.getAdjacencyMatrix();
+                    
+                    for (let i = 0; i < n; i++) {
+                        let degree = 0;
+                        for (let j = 0; j < n; j++) {
+                            degree += adjacency[i][j];
+                        }
+                        matrix[i][i] = degree;
+                    }
+                    
+                    return matrix;
+                },
+                getLaplacianMatrix() {
+                    const n = this.nodes.length;
+                    const adjacency = this.getAdjacencyMatrix();
+                    const degree = this.getDegreeMatrix();
+                    const laplacian = Array(n).fill().map(() => Array(n).fill(0));
+                    
+                    for (let i = 0; i < n; i++) {
+                        for (let j = 0; j < n; j++) {
+                            laplacian[i][j] = degree[i][j] - adjacency[i][j];
+                        }
+                    }
+                    
+                    return laplacian;
+                }
+            };
+            
+            console.log('Testing simple graph...');
+            const laplacian = graph.getLaplacianMatrix();
+            console.log('Laplacian matrix:', laplacian);
+            
+            const eigenvalues = eigenvalueCalculator.calculateEigenvalues(laplacian);
+            console.log('Eigenvalues:', eigenvalues);
+            
+            document.getElementById('result2').innerHTML = `
+                <strong>Graph:</strong> 1-2-3 (path graph)<br>
+                <strong>Laplacian Matrix:</strong><br>
+                [${laplacian[0].join(', ')}]<br>
+                [${laplacian[1].join(', ')}]<br>
+                [${laplacian[2].join(', ')}]<br><br>
+                <strong>Eigenvalues:</strong> [${eigenvalues.map(x => x.toFixed(3)).join(', ')}]<br>
+                <strong>Expected:</strong> [3, 1, 0] (approximately)
+            `;
+        }
+        
+        function testIdentity() {
+            const matrix = [[1, 0], [0, 1]];
+            console.log('Testing identity matrix:', matrix);
+            
+            const eigenvalues = eigenvalueCalculator.calculateEigenvalues(matrix);
+            console.log('Eigenvalues:', eigenvalues);
+            
+            document.getElementById('result3').innerHTML = `
+                <strong>Matrix:</strong><br>
+                [${matrix[0].join(', ')}]<br>
+                [${matrix[1].join(', ')}]<br><br>
+                <strong>Eigenvalues:</strong> [${eigenvalues.map(x => x.toFixed(3)).join(', ')}]<br>
+                <strong>Expected:</strong> [1, 1]
+            `;
+        }
+        
+        // Run tests on page load
+        window.addEventListener('load', () => {
+            console.log('Eigenvalue test page loaded');
+        });
+    </script>
+</body>
+</html>

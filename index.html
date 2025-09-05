@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eigenvalue Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        
+        <div class="main-content">
+            <div class="controls-panel">
+                <h3>Graph Controls</h3>
+                
+                <div class="control-group">
+                    <button id="addNodeBtn" class="btn btn-primary">Add Node</button>
+                    <button id="addEdgeBtn" class="btn btn-secondary">Add Edge</button>
+                    <button id="clearGraphBtn" class="btn btn-danger">Clear Graph</button>
+                </div>
+                
+                <div class="control-group">
+                    <label for="nodeCount">Nodes: <span id="nodeCount">0</span></label>
+                    <label for="edgeCount">Edges: <span id="edgeCount">0</span></label>
+                </div>
+                
+                <div class="control-group">
+                    <button id="calculateBtn" class="btn btn-success">Calculate Eigenvalues</button>
+                </div>
+                
+                <div class="control-group">
+                    <label for="graphType">Graph Type:</label>
+                    <select id="graphType" class="form-control">
+                        <option value="undirected">Undirected Graph</option>
+                        <option value="directed">Directed Graph</option>
+                    </select>
+                </div>
+                
+                <div class="mode-selector">
+                    <label>
+                        <input type="radio" name="mode" value="addNode" checked>
+                        Add Node Mode
+                    </label>
+                    <label>
+                        <input type="radio" name="mode" value="addEdge">
+                        Add Edge Mode
+                    </label>
+                    <label>
+                        <input type="radio" name="mode" value="delete">
+                        Delete Mode
+                    </label>
+                </div>
+                
+                <div class="control-group">
+                    <button id="autoLayoutBtn" class="btn btn-secondary">Auto-Layout Components</button>
+                </div>
+            </div>
+            
+            <div class="graph-container">
+                <canvas id="graphCanvas" width="800" height="600"></canvas>
+            </div>
+            
+            <div class="results-panel">
+                <h3>Results</h3>
+                <div id="eigenvalues" class="results-content">
+                    <p>Click "Calculate Eigenvalues" to see results</p>
+                </div>
+                
+                <div class="matrix-display">
+                    <h4>Laplacian Matrix</h4>
+                    <div id="laplacianMatrix" class="matrix-content">
+                        <p>No graph data available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h4>Instructions:</h4>
+            <ul>
+                <li>Select "Add Node Mode" and click on the canvas to add nodes</li>
+                <li>In Add Node Mode, you can also drag existing nodes to reposition them</li>
+                <li>Select "Add Edge Mode" and click two nodes to connect them</li>
+                <li>Select "Delete Mode" and click nodes/edges to remove them</li>
+                <li>Isolated nodes (no connections) are shown in gray with dashed borders</li>
+                <li>Use "Auto-Layout Components" to organize disconnected parts</li>
+                <li>Click "Calculate Eigenvalues" to compute the Laplacian eigenvalues</li>
+            </ul>
+            
+            <h4>Visual Indicators:</h4>
+            <ul>
+                <li><span style="color: #2c3e50;">●</span> Connected nodes (dark blue-gray)</li>
+                <li><span style="color: #95a5a6;">●</span> Isolated nodes (light gray, dashed border)</li>
+                <li><span style="color: #3498db;">●</span> Selected node (blue, thick border)</li>
+                <li>Directed edges show arrows, undirected edges are simple lines</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script src="graph.js"></script>
+    <script src="eigenvalue.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
