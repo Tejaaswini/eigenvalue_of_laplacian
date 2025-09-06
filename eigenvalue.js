@@ -154,7 +154,7 @@ class EigenvalueCalculator {
             }
         }
         
-        return eigenvalues.sort((a, b) => b - a); // Sort in descending order
+        return eigenvalues.sort((a, b) => a - b); // Sort in ascending order
     }
 
     // Simplified eigenvalue calculation for small matrices
@@ -199,7 +199,7 @@ class EigenvalueCalculator {
             }
         }
         
-        return eigenvalues.sort((a, b) => b - a);
+        return eigenvalues.sort((a, b) => a - b);
     }
 
     // Simple eigenvalue method for small matrices
@@ -242,7 +242,7 @@ class EigenvalueCalculator {
         const result4 = this.powerIteration(A, 200);
         eigenvalues.push(result4.eigenvalue);
         
-        return eigenvalues.sort((a, b) => b - a);
+        return eigenvalues.sort((a, b) => a - b);
     }
 
     // Deflate matrix by removing one eigenvalue

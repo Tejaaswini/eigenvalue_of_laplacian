@@ -9,6 +9,7 @@ body {
     background: #f5f7fa;
     min-height: 100vh;
     color: #2c3e50;
+    padding-top: 2rem;
 }
 
 .container {
@@ -35,6 +36,139 @@ header p {
     color: #7f8c8d;
 }
 
+/* Dark mode styles - monotone theme */
+body.dark-mode {
+    background: #0a0a0a;
+    color: #d0d0d0;
+}
+
+body.dark-mode header h1 {
+    color: #f0f0f0;
+}
+
+body.dark-mode header p {
+    color: #a0a0a0;
+}
+
+body.dark-mode .controls-panel,
+body.dark-mode .results-panel {
+    background: #1a1a1a;
+    border-color: #333333;
+    color: #d0d0d0;
+}
+
+body.dark-mode .panel-header {
+    border-bottom-color: #333333;
+}
+
+body.dark-mode .controls-panel h3,
+body.dark-mode .results-panel h3 {
+    color: #f0f0f0;
+}
+
+body.dark-mode .control-group label {
+    color: #d0d0d0;
+}
+
+body.dark-mode .graph-container {
+    background: #1a1a1a;
+    border-color: #333333;
+}
+
+body.dark-mode #graphCanvas {
+    background: #0a0a0a;
+    border-color: #333333;
+}
+
+body.dark-mode .results-content {
+    background: #0a0a0a;
+    color: #d0d0d0;
+}
+
+body.dark-mode .matrix-display h4 {
+    color: #f0f0f0;
+}
+
+body.dark-mode .matrix-content {
+    background: #0a0a0a;
+    color: #d0d0d0;
+}
+
+body.dark-mode .eigenvalue-item {
+    background: #1a1a1a;
+    border-color: #333333;
+    color: #d0d0d0;
+}
+
+/* Dark mode matrix styles */
+body.dark-mode .matrix-content td {
+    background: #0a0a0a;
+    color: #d0d0d0;
+    border-color: #333333;
+}
+
+body.dark-mode .matrix-content td.diagonal {
+    background: #404040;
+    color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Dark mode button styles */
+body.dark-mode .btn-primary {
+    background: #404040;
+    border-color: #505050;
+    color: #f0f0f0;
+}
+
+body.dark-mode .btn-primary:hover {
+    background: #505050;
+    border-color: #606060;
+}
+
+body.dark-mode .btn-secondary {
+    background: #303030;
+    border-color: #404040;
+    color: #d0d0d0;
+}
+
+body.dark-mode .btn-secondary:hover {
+    background: #404040;
+    border-color: #505050;
+}
+
+body.dark-mode .btn-success {
+    background: #404040;
+    border-color: #505050;
+    color: #f0f0f0;
+}
+
+body.dark-mode .btn-success:hover {
+    background: #505050;
+    border-color: #606060;
+}
+
+body.dark-mode .btn-danger {
+    background: #404040;
+    border-color: #505050;
+    color: #f0f0f0;
+}
+
+body.dark-mode .btn-danger:hover {
+    background: #505050;
+    border-color: #606060;
+}
+
+body.dark-mode .btn-dark-mode {
+    background: #303030;
+    border-color: #404040;
+    color: #f0f0f0;
+}
+
+body.dark-mode .btn-dark-mode:hover {
+    background: #404040;
+    border-color: #505050;
+}
+
 .main-content {
     display: grid;
     grid-template-columns: 280px 1fr 280px;
@@ -55,12 +189,19 @@ header p {
     box-sizing: border-box;
 }
 
-.controls-panel h3, .results-panel h3 {
-    color: #2c3e50;
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
-    font-size: 1.3rem;
     border-bottom: 2px solid #ecf0f1;
     padding-bottom: 10px;
+}
+
+.controls-panel h3, .results-panel h3 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1.3rem;
 }
 
 .control-group {
@@ -125,6 +266,30 @@ header p {
 .btn-danger:hover {
     background: #c0392b;
     border-color: #c0392b;
+}
+
+.btn.active {
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-dark-mode {
+    background: #34495e;
+    color: white;
+    border: 1px solid #34495e;
+    font-size: 16px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    min-width: 40px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-dark-mode:hover {
+    background: #2c3e50;
+    border-color: #2c3e50;
 }
 
 .control-group label {
@@ -226,6 +391,26 @@ header p {
     max-height: 200px;
     overflow-y: auto;
     border: 1px solid #e1e8ed;
+}
+
+.matrix-content table {
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.matrix-content td {
+    padding: 8px 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    color: #333;
+    min-width: 30px;
+}
+
+.matrix-content td.diagonal {
+    background: #e8f4fd;
+    color: #2c3e50;
+    font-weight: bold;
 }
 
 .eigenvalue-item {

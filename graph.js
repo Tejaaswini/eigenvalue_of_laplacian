@@ -33,20 +33,11 @@ class Graph {
     }
 
     addEdge(node1, node2) {
-        // Check if edge already exists
-        let existingEdge;
-        if (this.isDirected) {
-            // For directed graphs, only check one direction
-            existingEdge = this.edges.find(edge => 
-                edge.from === node1.id && edge.to === node2.id
-            );
-        } else {
-            // For undirected graphs, check both directions
-            existingEdge = this.edges.find(edge => 
-                (edge.from === node1.id && edge.to === node2.id) ||
-                (edge.from === node2.id && edge.to === node1.id)
-            );
-        }
+        // Check if edge already exists (always check both directions for undirected)
+        const existingEdge = this.edges.find(edge => 
+            (edge.from === node1.id && edge.to === node2.id) ||
+            (edge.from === node2.id && edge.to === node1.id)
+        );
         
         if (existingEdge || node1.id === node2.id) {
             return null;
@@ -56,7 +47,7 @@ class Graph {
             id: this.edgeIdCounter++,
             from: node1.id,
             to: node2.id,
-            directed: this.isDirected
+            directed: false // Always undirected
         };
         this.edges.push(edge);
         this.updateNodeConnectivity();
@@ -150,14 +141,7 @@ class Graph {
         this.nodes.forEach(node => node.isDragging = false);
     }
 
-    setDirected(isDirected) {
-        this.isDirected = isDirected;
-        // Update existing edges to reflect new direction setting
-        this.edges.forEach(edge => {
-            edge.directed = isDirected;
-        });
-        this.updateUI();
-    }
+    // Graph is always undirected - no need for setDirected method
 
     // Update node connectivity status
     updateNodeConnectivity() {
@@ -291,15 +275,31 @@ class Graph {
         this.draw();
     }
 
+    getColors() {
+        const isDark = document.body.classList.contains('dark-mode');
+        return {
+            edge: isDark ? '#404040' : '#34495e',
+            nodeSelected: isDark ? '#606060' : '#3498db',
+            nodeSelectedBorder: isDark ? '#707070' : '#2980b9',
+            nodeIsolated: isDark ? '#505050' : '#95a5a6',
+            nodeIsolatedBorder: isDark ? '#404040' : '#7f8c8d',
+            nodeNormal: isDark ? '#303030' : '#2c3e50',
+            nodeNormalBorder: isDark ? '#404040' : '#34495e',
+            text: isDark ? '#f0f0f0' : 'white',
+            textSecondary: isDark ? '#a0a0a0' : '#7f8c8d'
+        };
+    }
+
     draw() {
         const canvas = document.getElementById('graphCanvas');
         const ctx = canvas.getContext('2d');
+        const colors = this.getColors();
         
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // Draw edges
-        ctx.strokeStyle = '#34495e';
+        ctx.strokeStyle = colors.edge;
         ctx.lineWidth = 2;
         for (const edge of this.edges) {
             const fromNode = this.nodes.find(n => n.id === edge.from);
@@ -310,11 +310,6 @@ class Graph {
                 ctx.moveTo(fromNode.x, fromNode.y);
                 ctx.lineTo(toNode.x, toNode.y);
                 ctx.stroke();
-                
-                // Draw arrow for directed edges
-                if (this.isDirected) {
-                    this.drawArrow(ctx, fromNode.x, fromNode.y, toNode.x, toNode.y);
-                }
             }
         }
         
@@ -325,18 +320,18 @@ class Graph {
             ctx.arc(node.x, node.y, node.radius, 0, 2 * Math.PI);
             
             if (node === this.selectedNode) {
-                ctx.fillStyle = '#3498db';
-                ctx.strokeStyle = '#2980b9';
+                ctx.fillStyle = colors.nodeSelected;
+                ctx.strokeStyle = colors.nodeSelectedBorder;
                 ctx.lineWidth = 3;
             } else if (node.isIsolated) {
                 // Isolated nodes have a different color and dashed border
-                ctx.fillStyle = '#95a5a6';
-                ctx.strokeStyle = '#7f8c8d';
+                ctx.fillStyle = colors.nodeIsolated;
+                ctx.strokeStyle = colors.nodeIsolatedBorder;
                 ctx.lineWidth = 2;
                 ctx.setLineDash([5, 5]);
             } else {
-                ctx.fillStyle = '#2c3e50';
-                ctx.strokeStyle = '#34495e';
+                ctx.fillStyle = colors.nodeNormal;
+                ctx.strokeStyle = colors.nodeNormalBorder;
                 ctx.lineWidth = 2;
                 ctx.setLineDash([]);
             }
@@ -346,7 +341,7 @@ class Graph {
             ctx.setLineDash([]); // Reset line dash
             
             // Node label
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = colors.text;
             ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -354,7 +349,7 @@ class Graph {
             
             // Add isolation indicator for isolated nodes
             if (node.isIsolated) {
-                ctx.fillStyle = '#7f8c8d';
+                ctx.fillStyle = colors.textSecondary;
                 ctx.font = 'bold 10px Arial';
                 ctx.fillText('●', node.x + node.radius - 5, node.y - node.radius + 5);
             }
@@ -372,9 +367,7 @@ class Graph {
             
             if (fromIndex !== -1 && toIndex !== -1) {
                 matrix[fromIndex][toIndex] = 1;
-                if (!this.isDirected) {
-                    matrix[toIndex][fromIndex] = 1; // Undirected graph
-                }
+                matrix[toIndex][fromIndex] = 1; // Always symmetric for undirected graph
             }
         }
         
@@ -422,26 +415,7 @@ class Graph {
         return laplacian;
     }
 
-    // Draw arrow for directed edges
-    drawArrow(ctx, fromX, fromY, toX, toY) {
-        const headLength = 15;
-        const angle = Math.atan2(toY - fromY, toX - fromX);
-        
-        // Calculate arrow position (offset from target node)
-        const offset = 20; // Node radius
-        const arrowX = toX - offset * Math.cos(angle);
-        const arrowY = toY - offset * Math.sin(angle);
-        
-        // Draw arrow head
-        ctx.beginPath();
-        ctx.moveTo(arrowX, arrowY);
-        ctx.lineTo(arrowX - headLength * Math.cos(angle - Math.PI / 6), 
-                   arrowY - headLength * Math.sin(angle - Math.PI / 6));
-        ctx.moveTo(arrowX, arrowY);
-        ctx.lineTo(arrowX - headLength * Math.cos(angle + Math.PI / 6), 
-                   arrowY - headLength * Math.sin(angle + Math.PI / 6));
-        ctx.stroke();
-    }
+    // Arrow drawing removed - graph is always undirected
 }
 
 // Initialize graph instance

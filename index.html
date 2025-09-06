@@ -11,10 +11,16 @@
         
         <div class="main-content">
             <div class="controls-panel">
-                <h3>Graph Controls</h3>
+                <div class="panel-header">
+                    <h3>Graph Controls</h3>
+                    <button id="darkModeToggle" class="btn btn-dark-mode" title="Toggle Dark Mode">
+                        <span>🌙</span>
+                    </button>
+                </div>
                 
                 <div class="control-group">
                     <button id="addNodeBtn" class="btn btn-primary">Add Node</button>
+                    <button id="deleteBtn" class="btn btn-danger">Delete</button>
                     <button id="addEdgeBtn" class="btn btn-secondary">Add Edge</button>
                     <button id="clearGraphBtn" class="btn btn-danger">Clear Graph</button>
                 </div>
@@ -28,15 +34,15 @@
                     <button id="calculateBtn" class="btn btn-success">Calculate Eigenvalues</button>
                 </div>
                 
-                <div class="control-group">
+                <!-- <div class="control-group">
                     <label for="graphType">Graph Type:</label>
                     <select id="graphType" class="form-control">
                         <option value="undirected">Undirected Graph</option>
                         <option value="directed">Directed Graph</option>
                     </select>
-                </div>
+                </div> -->
                 
-                <div class="mode-selector">
+                <!-- <div class="mode-selector">
                     <label>
                         <input type="radio" name="mode" value="addNode" checked>
                         Add Node Mode
@@ -49,7 +55,7 @@
                         <input type="radio" name="mode" value="delete">
                         Delete Mode
                     </label>
-                </div>
+                </div> -->
                 
                 <div class="control-group">
                     <button id="autoLayoutBtn" class="btn btn-secondary">Auto-Layout Components</button>
@@ -75,7 +81,7 @@
             </div>
         </div>
         
-        <div class="instructions">
+        <!-- <div class="instructions">
             <h4>Instructions:</h4>
             <ul>
                 <li>Select "Add Node Mode" and click on the canvas to add nodes</li>
@@ -94,7 +100,7 @@
                 <li><span style="color: #3498db;">●</span> Selected node (blue, thick border)</li>
                 <li>Directed edges show arrows, undirected edges are simple lines</li>
             </ul>
-        </div>
+        </div> -->
     </div>
     
     <script src="graph.js"></script>

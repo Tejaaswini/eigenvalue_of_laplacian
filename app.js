@@ -88,14 +88,20 @@ class GraphApp {
             this.calculateEigenvalues();
         });
 
+        document.getElementById('deleteBtn').addEventListener('click', () => {
+            graph.setMode('delete');
+            this.updateModeUI();
+        });
+
         document.getElementById('autoLayoutBtn').addEventListener('click', () => {
             graph.autoLayoutDisconnectedComponents();
         });
 
-        // Graph type toggle
-        document.getElementById('graphType').addEventListener('change', (e) => {
-            graph.setDirected(e.target.value === 'directed');
+        // Dark mode toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            this.toggleDarkMode();
         });
+
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -135,6 +141,7 @@ class GraphApp {
     initializeUI() {
         this.updateModeUI();
         this.updateNodeCounts();
+        this.initializeDarkMode();
     }
 
     updateModeUI() {
@@ -147,7 +154,8 @@ class GraphApp {
         // Update button states
         const buttons = {
             'addNode': document.getElementById('addNodeBtn'),
-            'addEdge': document.getElementById('addEdgeBtn')
+            'addEdge': document.getElementById('addEdgeBtn'),
+            'delete': document.getElementById('deleteBtn')
         };
 
         Object.keys(buttons).forEach(mode => {
@@ -172,6 +180,38 @@ class GraphApp {
             'delete': 'not-allowed'
         };
         return cursors[mode] || 'default';
+    }
+
+    toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        const icon = document.querySelector('#darkModeToggle span');
+        icon.textContent = isDark ? '☀️' : '🌙';
+        
+        // Save preference to localStorage
+        localStorage.setItem('darkMode', isDark);
+        
+        // Update graph colors for dark mode
+        this.updateGraphColors();
+    }
+
+    initializeDarkMode() {
+        const savedDarkMode = localStorage.getItem('darkMode');
+        // Default to dark mode if no preference is saved
+        const isDarkMode = savedDarkMode === null ? true : savedDarkMode === 'true';
+        
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            const icon = document.querySelector('#darkModeToggle span');
+            icon.textContent = '☀️';
+        }
+        this.updateGraphColors();
+    }
+
+    updateGraphColors() {
+        const isDark = document.body.classList.contains('dark-mode');
+        // Update graph colors based on dark mode
+        // This will be handled by the graph's draw method
     }
 
     calculateEigenvalues() {
@@ -216,8 +256,8 @@ class GraphApp {
             return;
         }
 
-        // Sort eigenvalues in descending order
-        const sortedEigenvalues = [...eigenvalues].sort((a, b) => b - a);
+        // Sort eigenvalues in ascending order
+        const sortedEigenvalues = [...eigenvalues].sort((a, b) => a - b);
         
         let html = '<h4>Eigenvalues (sorted by magnitude):</h4>';
         
@@ -231,8 +271,6 @@ class GraphApp {
             `;
         });
 
-        // Add some analysis
-        html += this.analyzeEigenvalues(sortedEigenvalues);
         
         container.innerHTML = html;
     }
@@ -244,50 +282,6 @@ class GraphApp {
         return '#667eea'; // Default blue for larger values
     }
 
-    analyzeEigenvalues(eigenvalues) {
-        if (eigenvalues.length === 0) return '';
-        
-        let analysis = '<div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px;">';
-        analysis += '<h5>Analysis:</h5>';
-        
-        // Check for zero eigenvalues (connected components)
-        const zeroEigenvalues = eigenvalues.filter(λ => Math.abs(λ) < 0.001).length;
-        if (zeroEigenvalues > 0) {
-            analysis += `<p>• ${zeroEigenvalues} zero eigenvalue(s) - indicates ${zeroEigenvalues} connected component(s)</p>`;
-        }
-        
-        // Check for isolated nodes
-        const isolatedNodes = graph.nodes.filter(node => node.isIsolated).length;
-        if (isolatedNodes > 0) {
-            analysis += `<p>• ${isolatedNodes} isolated node(s) - nodes with no connections (shown in red with dashed border)</p>`;
-        }
-        
-        // Check for negative eigenvalues
-        const negativeEigenvalues = eigenvalues.filter(λ => λ < -0.001).length;
-        if (negativeEigenvalues > 0) {
-            analysis += `<p>• ${negativeEigenvalues} negative eigenvalue(s) - check matrix properties</p>`;
-        }
-        
-        // Spectral gap
-        if (eigenvalues.length > 1) {
-            const spectralGap = eigenvalues[0] - eigenvalues[1];
-            analysis += `<p>• Spectral gap: ${spectralGap.toFixed(3)}</p>`;
-        }
-        
-        // Largest eigenvalue
-        analysis += `<p>• Largest eigenvalue: ${eigenvalues[0].toFixed(3)}</p>`;
-        
-        // Graph connectivity info
-        const components = graph.getConnectedComponents();
-        if (components.length > 1) {
-            analysis += `<p>• Graph has ${components.length} disconnected components</p>`;
-        } else if (components.length === 1 && graph.nodes.length > 0) {
-            analysis += `<p>• Graph is fully connected</p>`;
-        }
-        
-        analysis += '</div>';
-        return analysis;
-    }
 
     displayLaplacianMatrix(matrix) {
         const container = document.getElementById('laplacianMatrix');
@@ -297,22 +291,19 @@ class GraphApp {
             return;
         }
 
-        let html = '<div style="font-family: monospace; font-size: 12px;">';
-        html += '<table style="border-collapse: collapse; width: 100%;">';
+        let html = '<table>';
         
         matrix.forEach((row, i) => {
             html += '<tr>';
             row.forEach((val, j) => {
                 const rounded = Math.round(val * 100) / 100;
-                const style = `padding: 4px 8px; border: 1px solid #ddd; text-align: center; ${
-                    i === j ? 'background-color: #f0f8ff; font-weight: bold;' : ''
-                }`;
-                html += `<td style="${style}">${rounded}</td>`;
+                const diagonalClass = i === j ? ' diagonal' : '';
+                html += `<td class="${diagonalClass}">${rounded}</td>`;
             });
             html += '</tr>';
         });
         
-        html += '</table></div>';
+        html += '</table>';
         container.innerHTML = html;
     }
 
